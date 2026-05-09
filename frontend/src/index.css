@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Mukta:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:        #0f3d2a;
+  --forest-dark:   #0a2c1e;
+  --forest-light:  #1a5c38;
+  --mint:          #7bcaa4;
+  --mint-light:    #e8f5ee;
+  --mint-pale:     #EAF3DE;
+  --terracotta:    #c4653a;
+  --terracotta-lt: #FAECE7;
+  --cream:         #fdf6ec;
+  --sand:          #f7f3ed;
+  --sandstone:     #e8d5bc;
+  --warm-gray:     #6b5e50;
+  --warm-dark:     #1a3a2a;
+  --gold:          #ba7517;
+  --success:       #1d9e75;
+  --danger:        #A32D2D;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Mukta', sans-serif;
+
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --shadow-sm:  0 1px 4px rgba(0,0,0,0.07);
+  --shadow-md:  0 4px 20px rgba(15,61,42,0.1);
+  --shadow-lg:  0 12px 40px rgba(15,61,42,0.15);
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--sand);
+  color: var(--warm-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: var(--font-body); }
+input, select, textarea { font-family: var(--font-body); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sandstone); border-radius: 4px; }

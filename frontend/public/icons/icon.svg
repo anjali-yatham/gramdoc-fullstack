@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="100" fill="#0F3D2A"/>
+  <path d="M120 100V240C120 315.1 180.9 376 256 376C331.1 376 392 315.1 392 240V100" stroke="#7BCAA4" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M180 100V180" stroke="#7BCAA4" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M332 100V180" stroke="#7BCAA4" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="420" r="40" fill="#7BCAA4"/>
+  <path d="M256 376V380" stroke="#7BCAA4" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="50%" y="260" dominant-baseline="middle" text-anchor="middle" fill="#7BCAA4" font-family="Fraunces, Georgia, serif" font-size="120" font-weight="bold" font-style="italic">GD</text>
+</svg>
