@@ -516,8 +516,6 @@ export default function VoiceTriage() {
   async function startListening() {
     if (shouldStopRef.current || isListeningRef.current !== true) return
     setListening(true) // Show listening indicator immediately
-    // Small delay before listening starts
-    await new Promise(r => setTimeout(r, 400))
     try {
       const heard = await listenOnce(lang, 20000)
       if (shouldStopRef.current) return
@@ -580,8 +578,6 @@ export default function VoiceTriage() {
   async function askQuestion(q) {
     if (useText || shouldStopRef.current) return
     setListening(true) // Show listening indicator immediately
-    // Small delay before listening starts
-    await new Promise(r => setTimeout(r, 400))
     try {
       const heard = await listenOnce(lang, 20000)
       if (shouldStopRef.current) return
