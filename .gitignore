@@ -2,8 +2,22 @@
 .env
 .env.local
 .env.production
+.env.*.local
 backend/.env
+backend/.env.local
+backend/.env.production
 frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# Sensitive files
+**/config/keys.js
+**/config/credentials.js
+**/*.key
+**/*.pem
+auth*.txt
+*.txt
+credentials.json
 
 # Dependencies
 node_modules/
@@ -17,6 +31,7 @@ frontend/dist/
 # Logs
 *.log
 npm-debug.log*
+yarn-error.log*
 
 # OS files
 .DS_Store
@@ -25,3 +40,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Temporary files
+temp.json
+out.json
