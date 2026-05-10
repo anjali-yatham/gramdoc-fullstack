@@ -2,12 +2,17 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { api } from '../utils/api'
+import { api, safeParse } from '../utils/api'
 
 export default function AshaPregnancyTracker() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState([])
+  const [motherVaccinations, setMotherVaccinations] = useState([
+    { id: 1, patient: 'Priya Kumari', vaccine: 'TT-1', dueDate: 'May 8', status: 'due' },
+    { id: 2, patient: 'Anitha Reddy', vaccine: 'TT-2', dueDate: 'May 15', status: 'upcoming' },
+    { id: 3, patient: 'Kavitha Bai', vaccine: 'TT-1', dueDate: 'May 20', status: 'upcoming' }
+  ])
 
   useEffect(() => {
     fetchPregnancies()
@@ -170,6 +175,72 @@ export default function AshaPregnancyTracker() {
             </motion.div>
           )
         })}
+      </div>
+
+      {/* ADDITION 7: Mother Vaccination Schedule */}
+      <div style={{ marginTop: 40 }}>
+        <h2 style={{ fontSize: 18, color: '#0f3d2a', fontWeight: 800, marginBottom: 20 }}>💉 Vaccination Schedule for Mothers</h2>
+        
+        <div style={{ background: '#fff', borderRadius: 16, padding: 20, border: '1px solid #e8d5bc' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #e8d5bc' }}>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 800, color: '#6b5e50', textTransform: 'uppercase' }}>Patient</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 800, color: '#6b5e50', textTransform: 'uppercase' }}>Vaccine</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 800, color: '#6b5e50', textTransform: 'uppercase' }}>Due Date</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 800, color: '#6b5e50', textTransform: 'uppercase' }}>Status</th>
+                <th style={{ padding: '12px', textAlign: 'left', fontSize: 12, fontWeight: 800, color: '#6b5e50', textTransform: 'uppercase' }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {motherVaccinations.map((vax, i) => (
+                <tr key={vax.id} style={{ borderBottom: i < motherVaccinations.length - 1 ? '1px solid #f0f0f0' : 'none' }}>
+                  <td style={{ padding: '14px', fontSize: 14, fontWeight: 600, color: '#0f3d2a' }}>{vax.patient}</td>
+                  <td style={{ padding: '14px', fontSize: 13, color: '#6b5e50' }}>{vax.vaccine}</td>
+                  <td style={{ padding: '14px', fontSize: 13, color: '#6b5e50' }}>{vax.dueDate}</td>
+                  <td style={{ padding: '14px' }}>
+                    {vax.status === 'done' ? (
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#1d9e75' }}>Done ✅</span>
+                    ) : vax.status === 'due' ? (
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#f59e0b' }}>Due</span>
+                    ) : (
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#999' }}>Upcoming</span>
+                    )}
+                  </td>
+                  <td style={{ padding: '14px' }}>
+                    {vax.status !== 'done' && vax.status === 'due' && (
+                      <button
+                        onClick={() => {
+                          toast.success('💉 Vaccination marked! ₹20 credited to your account')
+                          const earnings = safeParse(localStorage.getItem('gd_asha_earnings'), { today: 0, total: 0 })
+                          earnings.today += 20
+                          earnings.total += 20
+                          localStorage.setItem('gd_asha_earnings', JSON.stringify(earnings))
+                          
+                          setMotherVaccinations(prev => prev.map(v => 
+                            v.id === vax.id ? { ...v, status: 'done' } : v
+                          ))
+                        }}
+                        style={{
+                          background: '#0f3d2a',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 8,
+                          padding: '6px 12px',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Done
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Vaccinations are tracked in the dedicated Vaccination Tracker tab */}

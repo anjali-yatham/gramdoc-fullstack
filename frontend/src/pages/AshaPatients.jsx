@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { api } from '../utils/api'
+import { api, safeParse } from '../utils/api'
 
 export default function AshaPatients() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [patients, setPatients] = useState([])
   const [search, setSearch] = useState('')
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [ashaNote, setAshaNote] = useState('')
 
   useEffect(() => {
     fetchPatients()
@@ -41,7 +44,17 @@ export default function AshaPatients() {
   }
 
   const handleViewProfile = (p) => {
-    navigate('/app/patient-profile', { state: { patient: p } })
+    setSelectedPatient(p)
+    const notes = safeParse(localStorage.getItem('gd_asha_notes'), {})
+    setAshaNote(notes[p.id] || '')
+  }
+
+  const handleSaveNote = () => {
+    if (!selectedPatient) return
+    const notes = safeParse(localStorage.getItem('gd_asha_notes'), {})
+    notes[selectedPatient.id] = ashaNote
+    localStorage.setItem('gd_asha_notes', JSON.stringify(notes))
+    toast.success('Note saved!')
   }
 
   const handleCall = (p) => {
@@ -51,7 +64,17 @@ export default function AshaPatients() {
 
   const getEnglishName = (p) => p?.nameEn || p?.englishName || p?.nameEnglish || p?.name || 'Patient'
 
-  const filtered = patients.filter(p => getEnglishName(p).toLowerCase().includes(search.toLowerCase()))
+  const filtered = patients.filter(p => {
+    const matchesSearch = getEnglishName(p).toLowerCase().includes(search.toLowerCase())
+    if (!matchesSearch) return false
+    
+    if (activeFilter === 'all') return true
+    if (activeFilter === 'urgent') return (p.status || '').toLowerCase() === 'urgent'
+    if (activeFilter === 'followup') return (p.status || '').toLowerCase() === 'followup'
+    if (activeFilter === 'pregnant') return (p.status || '').toLowerCase() === 'pregnant'
+    if (activeFilter === 'active') return (p.status || '').toLowerCase() === 'active'
+    return true
+  })
 
   const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
@@ -82,7 +105,7 @@ export default function AshaPatients() {
       </div>
 
       {/* Search */}
-      <div style={{ position: 'relative', marginBottom: 24 }}>
+      <div style={{ position: 'relative', marginBottom: 16 }}>
         <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
         <input 
           type="text" 
@@ -91,6 +114,31 @@ export default function AshaPatients() {
           onChange={e => setSearch(e.target.value)}
           style={{ width: '100%', padding: '14px 14px 14px 44px', borderRadius: 14, border: '1px solid #e8d5bc', fontSize: 15, outline: 'none', background: '#fff' }}
         />
+      </div>
+
+      {/* ADDITION 4: Filter Pills */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 24, overflowX: 'auto', paddingBottom: 4 }}>
+        {['all', 'urgent', 'followup', 'pregnant', 'active'].map(filter => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            style={{
+              padding: '5px 14px',
+              borderRadius: 20,
+              fontSize: 11,
+              fontWeight: 600,
+              border: activeFilter === filter ? 'none' : '1px solid #e8d5bc',
+              background: activeFilter === filter ? '#0f3d2a' : '#fff',
+              color: activeFilter === filter ? '#fff' : '#6b5e50',
+              cursor: 'pointer',
+              textTransform: 'capitalize',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s'
+            }}
+          >
+            {filter === 'followup' ? 'Follow-up' : filter}
+          </button>
+        ))}
       </div>
 
       {/* Patient Grid */}
@@ -136,6 +184,132 @@ export default function AshaPatients() {
           </div>
         )}
       </div>
+
+      {/* ADDITION 5: Patient Detail Modal */}
+      <AnimatePresence>
+        {selectedPatient && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              style={{ background: '#fff', borderRadius: 20, padding: 28, width: 480, maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}
+            >
+              <button
+                onClick={() => setSelectedPatient(null)}
+                style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', fontSize: 24, cursor: 'pointer', color: '#999' }}
+              >
+                ×
+              </button>
+
+              {/* Header */}
+              <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                <div style={{ width: 60, height: 60, borderRadius: '50%', background: getStatusColor(selectedPatient.status), color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, margin: '0 auto 12px' }}>
+                  {(getEnglishName(selectedPatient) || 'P').split(' ').filter(Boolean).map(n => n[0]).join('') || 'P'}
+                </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#0f3d2a' }}>{getEnglishName(selectedPatient)}</div>
+                <div style={{ fontSize: 13, color: '#6b5e50', marginTop: 4 }}>{selectedPatient.age}Y • {selectedPatient.gender}</div>
+                <span style={{ display: 'inline-block', marginTop: 8, fontSize: 9, fontWeight: 800, padding: '3px 10px', borderRadius: 20, background: `${getStatusColor(selectedPatient.status)}15`, color: getStatusColor(selectedPatient.status), border: `1px solid ${getStatusColor(selectedPatient.status)}30`, textTransform: 'uppercase' }}>
+                  {selectedPatient.status}
+                </span>
+              </div>
+
+              {/* Basic Info */}
+              <div style={{ background: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#6b5e50', marginBottom: 12, textTransform: 'uppercase' }}>Basic Info</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+                  <div><span style={{ color: '#999' }}>Village:</span> <span style={{ fontWeight: 600, color: '#0f3d2a' }}>{selectedPatient.village}</span></div>
+                  <div><span style={{ color: '#999' }}>District:</span> <span style={{ fontWeight: 600, color: '#0f3d2a' }}>{selectedPatient.district || 'N/A'}</span></div>
+                  <div><span style={{ color: '#999' }}>Phone:</span> <span style={{ fontWeight: 600, color: '#0f3d2a' }}>{selectedPatient.phone || 'N/A'}</span></div>
+                  <div><span style={{ color: '#999' }}>Blood:</span> <span style={{ fontWeight: 600, color: '#0f3d2a' }}>{selectedPatient.bloodGroup || 'N/A'}</span></div>
+                </div>
+              </div>
+
+              {/* Health Conditions */}
+              {selectedPatient.conditions && selectedPatient.conditions.length > 0 && (
+                <div style={{ background: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6b5e50', marginBottom: 12, textTransform: 'uppercase' }}>Health Conditions</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {selectedPatient.conditions.map((cond, i) => (
+                      <span key={i} style={{ background: '#fff', border: '1px solid #e8d5bc', borderRadius: 12, padding: '4px 10px', fontSize: 11, fontWeight: 600, color: '#0f3d2a' }}>
+                        {cond}
+                      </span>
+                    ))}
+                  </div>
+                  {selectedPatient.isPregnant && (
+                    <div style={{ marginTop: 12, fontSize: 13, fontWeight: 700, color: '#7B3FA0' }}>
+                      🤰 Week {selectedPatient.weeksPregnant || 'N/A'} of 40
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Past Consultations */}
+              <div style={{ background: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#6b5e50', marginBottom: 12, textTransform: 'uppercase' }}>Past Consultations</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ fontSize: 12, color: '#6b5e50', padding: '8px', background: '#fff', borderRadius: 8 }}>
+                    <div style={{ fontWeight: 700, color: '#0f3d2a' }}>Dr. Ramesh Kumar</div>
+                    <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>May 1, 2026 • Fever & Cold</div>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6b5e50', padding: '8px', background: '#fff', borderRadius: 8 }}>
+                    <div style={{ fontWeight: 700, color: '#0f3d2a' }}>Dr. Priya Sharma</div>
+                    <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>Apr 15, 2026 • Stomach Pain</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Medicines */}
+              <div style={{ background: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#6b5e50', marginBottom: 12, textTransform: 'uppercase' }}>Active Medicines</div>
+                <div style={{ fontSize: 12, color: '#6b5e50', lineHeight: 1.6 }}>
+                  <div>• Paracetamol 500mg - 1-0-1</div>
+                  <div>• Azithromycin 250mg - 1-0-0</div>
+                </div>
+              </div>
+
+              {/* ASHA Notes */}
+              <div style={{ background: '#f9f9f9', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#6b5e50', marginBottom: 12, textTransform: 'uppercase' }}>ASHA Notes</div>
+                <textarea
+                  value={ashaNote}
+                  onChange={(e) => setAshaNote(e.target.value)}
+                  placeholder="Add notes about this patient..."
+                  style={{ width: '100%', minHeight: 80, padding: 10, borderRadius: 8, border: '1px solid #e8d5bc', fontSize: 12, fontFamily: 'Mukta, sans-serif', resize: 'vertical' }}
+                />
+                <button
+                  onClick={handleSaveNote}
+                  style={{ marginTop: 10, width: '100%', background: '#0f3d2a', color: '#fff', border: 'none', borderRadius: 8, padding: '10px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Save Note
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => {
+                    handleBookConsult(selectedPatient)
+                    setSelectedPatient(null)
+                  }}
+                  style={{ flex: 1, background: '#0f3d2a', color: '#fff', border: 'none', borderRadius: 10, padding: '12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  📹 Book Consult
+                </button>
+                <button
+                  onClick={() => {
+                    handleCall(selectedPatient)
+                    setSelectedPatient(null)
+                  }}
+                  style={{ flex: 1, background: '#fff', color: '#0f3d2a', border: '1px solid #0f3d2a', borderRadius: 10, padding: '12px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  📞 Call
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

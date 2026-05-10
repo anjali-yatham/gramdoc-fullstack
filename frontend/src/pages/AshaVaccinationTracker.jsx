@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { api } from '../utils/api'
+import { api, safeParse } from '../utils/api'
 
 export default function AshaVaccinationTracker() {
   const [loading, setLoading] = useState(true)
@@ -29,7 +29,13 @@ export default function AshaVaccinationTracker() {
     try {
       await api.markVaccinationDone(id)
       setData(prev => prev.map(v => v.id === id ? { ...v, status: 'completed' } : v))
-      toast.success('Vaccination marked complete ✅')
+      
+      // ADDITION 8: Earnings on mark done
+      toast.success('✅ Vaccination marked complete! ₹20 credited to your account 💰')
+      const earnings = safeParse(localStorage.getItem('gd_asha_earnings'), { today: 0, total: 0 })
+      earnings.today += 20
+      earnings.total += 20
+      localStorage.setItem('gd_asha_earnings', JSON.stringify(earnings))
     } catch (err) {
       toast.error('Failed to update status')
     }

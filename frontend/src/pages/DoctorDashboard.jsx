@@ -218,6 +218,66 @@ export default function DoctorDashboard() {
     }
   }, [])
 
+  // Demo queue data for when API returns empty
+  const DEMO_QUEUE = [
+    {
+      id: '1',
+      name: 'Lakshmi Devi',
+      age: 34,
+      gender: 'F',
+      village: 'Kondapur',
+      waitingSince: new Date(Date.now() - 5 * 60000).toISOString(),
+      symptoms: ['High Fever', 'Headache'],
+      urgency: 'high',
+      triageSummary: 'Patient reports fever of 102F for 2 days with severe headache. Needs immediate attention.',
+      bloodGroup: 'B+',
+      ashaWorker: 'Sunita Devi',
+      phone: '9876543210'
+    },
+    {
+      id: '2',
+      name: 'Ramu Yadav',
+      age: 58,
+      gender: 'M',
+      village: 'Bhupalpally',
+      waitingSince: new Date(Date.now() - 12 * 60000).toISOString(),
+      symptoms: ['Chest Pain', 'Shortness of Breath'],
+      urgency: 'high',
+      triageSummary: 'Patient reports chest tightness for 3 hours. History of hypertension. Requires urgent cardiology review.',
+      bloodGroup: 'O+',
+      ashaWorker: 'Sunita Devi',
+      phone: '9876543211'
+    },
+    {
+      id: '3',
+      name: 'Priya Kumari',
+      age: 28,
+      gender: 'F',
+      village: 'Narsapur',
+      waitingSince: new Date(Date.now() - 20 * 60000).toISOString(),
+      symptoms: ['Pregnancy Check', 'Morning Sickness'],
+      urgency: 'medium',
+      triageSummary: 'Pregnant patient at 24 weeks. Routine ANC checkup. Reports morning sickness and mild back pain.',
+      bloodGroup: 'A+',
+      ashaWorker: 'Meena Bai',
+      phone: '9876543212'
+    },
+    {
+      id: '4',
+      name: 'Venkat Rao',
+      age: 45,
+      gender: 'M',
+      village: 'Cherial',
+      waitingSince: new Date(Date.now() - 35 * 60000).toISOString(),
+      symptoms: ['Cough', 'Cold', 'Fatigue'],
+      urgency: 'low',
+      triageSummary: 'Patient reports persistent cough for 5 days with mild fever. No breathlessness. Likely upper respiratory infection.',
+      bloodGroup: 'AB+',
+      ashaWorker: 'Sunita Devi',
+      phone: '9876543213'
+    }
+  ]
+
   const normalizeQueueItem = (item) => {
     const patient = item?.patient || {}
     const symptoms = item?.symptoms || patient?.symptoms || []
@@ -243,13 +303,40 @@ export default function DoctorDashboard() {
       try {
         const liveQueue = await api.getQueue()
         if (!isMounted) return
-        const normalized = (liveQueue || []).map(normalizeQueueItem)
-        setQueueData(normalized)
-        localStorage.setItem('gd_queue', JSON.stringify(normalized))
+        
+        if (liveQueue && liveQueue.length > 0) {
+          const normalized = liveQueue.map(normalizeQueueItem)
+          setQueueData(normalized)
+          localStorage.setItem('gd_queue', JSON.stringify(normalized))
+        } else {
+          // API returned empty - use demo data
+          console.log('Using demo queue data')
+          setQueueData(DEMO_QUEUE)
+        }
       } catch (e) {
-        if (!isMounted) return
-        const cached = await dualLoad('gd_queue', [])
-        setQueueData(cached)
+        // API failed - use demo data
+        console.log('API failed, using demo queue data')
+        setQueueData(DEMO_QUEUE)
+      }
+      
+      // Also check localStorage for any patients added manually
+      const localQueue = safeParse(localStorage.getItem('gd_queue'), [])
+      if (localQueue.length > 0) {
+        setQueueData(prev => {
+          // Merge local + demo, remove duplicates
+          const merged = [...localQueue, ...DEMO_QUEUE]
+          const unique = merged.filter((item, index, self) =>
+            index === self.findIndex(t => t.id === item.id)
+          )
+          // Sort by urgency and wait time
+          return unique.sort((a, b) => {
+            const urgencyOrder = { high: 0, medium: 1, low: 2 }
+            if (urgencyOrder[a.urgency] !== urgencyOrder[b.urgency]) {
+              return urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
+            }
+            return new Date(a.waitingSince) - new Date(b.waitingSince)
+          })
+        })
       }
     }
     syncQueue()

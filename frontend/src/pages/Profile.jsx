@@ -425,6 +425,189 @@ export default function Profile() {
             </div>
           </div>
 
+          {/* SUBSCRIPTION PLAN SECTION */}
+          <div style={{ background: '#ffffff', borderRadius: 16, padding: 24, border: '0.5px solid #e8d5bc', marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ 
+                fontFamily: "'Fraunces', serif", 
+                fontStyle: 'italic', 
+                fontSize: 18, 
+                color: '#0f3d2a',
+                margin: 0
+              }}>
+                📋 Subscription Plan
+              </h3>
+              <div style={{
+                background: '#e8f5ee',
+                color: '#0f3d2a',
+                padding: '4px 12px',
+                borderRadius: 20,
+                fontSize: 11,
+                fontWeight: 700
+              }}>
+                BASIC PLAN — Active
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 16 }}>
+              {/* BASIC PLAN */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                style={{
+                  border: '2px solid #0f3d2a',
+                  borderRadius: 12,
+                  padding: 20,
+                  background: '#fff',
+                  position: 'relative'
+                }}
+              >
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#0f3d2a', marginBottom: 8 }}>
+                  Basic
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#0f3d2a', marginBottom: 12 }}>
+                  ₹299<span style={{ fontSize: 13, fontWeight: 400 }}>/month</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#6b5e50', marginBottom: 16, lineHeight: 1.6 }}>
+                  <div style={{ marginBottom: 6 }}>✓ Up to 50 patients/month</div>
+                  <div style={{ marginBottom: 6 }}>✓ Basic analytics</div>
+                  <div style={{ marginBottom: 6 }}>✓ Digital prescriptions</div>
+                  <div>✓ WhatsApp sharing</div>
+                </div>
+                <button
+                  disabled
+                  style={{
+                    width: '100%',
+                    background: '#e8d5bc',
+                    color: '#6b5e50',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'not-allowed'
+                  }}
+                >
+                  Current Plan
+                </button>
+              </motion.div>
+
+              {/* PRO PLAN */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                style={{
+                  border: '2px solid #e8d5bc',
+                  borderRadius: 12,
+                  padding: 20,
+                  background: '#fff',
+                  position: 'relative'
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  top: -10,
+                  right: 16,
+                  background: '#854F0B',
+                  color: '#fff',
+                  padding: '4px 12px',
+                  borderRadius: 12,
+                  fontSize: 10,
+                  fontWeight: 700
+                }}>
+                  POPULAR
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#0f3d2a', marginBottom: 8 }}>
+                  Pro
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#0f3d2a', marginBottom: 12 }}>
+                  ₹599<span style={{ fontSize: 13, fontWeight: 400 }}>/month</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#6b5e50', marginBottom: 16, lineHeight: 1.6 }}>
+                  <div style={{ marginBottom: 6 }}>✓ Unlimited patients</div>
+                  <div style={{ marginBottom: 6 }}>✓ Advanced analytics</div>
+                  <div style={{ marginBottom: 6 }}>✓ Priority listing</div>
+                  <div style={{ marginBottom: 6 }}>✓ Village health reports</div>
+                  <div>✓ Earnings dashboard</div>
+                </div>
+                <button
+                  onClick={() => toast('Redirecting to payment...')}
+                  style={{
+                    width: '100%',
+                    background: '#0f3d2a',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Upgrade to Pro
+                </button>
+              </motion.div>
+
+              {/* PREMIUM PLAN */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                style={{
+                  border: '2px solid #e8d5bc',
+                  borderRadius: 12,
+                  padding: 20,
+                  background: '#fff',
+                  position: 'relative'
+                }}
+              >
+                <div style={{
+                  position: 'absolute',
+                  top: -10,
+                  right: 16,
+                  background: '#7c3aed',
+                  color: '#fff',
+                  padding: '4px 12px',
+                  borderRadius: 12,
+                  fontSize: 10,
+                  fontWeight: 700
+                }}>
+                  BEST VALUE
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#0f3d2a', marginBottom: 8 }}>
+                  Premium
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#0f3d2a', marginBottom: 12 }}>
+                  ₹999<span style={{ fontSize: 13, fontWeight: 400 }}>/month</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#6b5e50', marginBottom: 16, lineHeight: 1.6 }}>
+                  <div style={{ marginBottom: 6 }}>✓ Everything in Pro</div>
+                  <div style={{ marginBottom: 6 }}>✓ API access</div>
+                  <div style={{ marginBottom: 6 }}>✓ White label option</div>
+                  <div style={{ marginBottom: 6 }}>✓ Dedicated support</div>
+                  <div style={{ marginBottom: 6 }}>✓ Custom branding</div>
+                  <div>✓ Impact certificates</div>
+                </div>
+                <button
+                  onClick={() => toast('Redirecting to payment...')}
+                  style={{
+                    width: '100%',
+                    background: '#0f3d2a',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Upgrade to Premium
+                </button>
+              </motion.div>
+            </div>
+
+            <div style={{ fontSize: 11, color: '#6b5e50', textAlign: 'center', fontStyle: 'italic' }}>
+              * Plans renew monthly. Cancel anytime. GST included in pricing.
+            </div>
+          </div>
+
           <div style={{ background: '#ffffff', borderRadius: 16, padding: 28, border: '0.5px solid #e8d5bc' }}>
             
             {/* Header */}

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { api } from '../utils/api'
+import { api, safeParse } from '../utils/api'
 
 export default function AshaRegisterPatient() {
   const navigate = useNavigate()
@@ -75,7 +75,14 @@ export default function AshaRegisterPatient() {
         isPregnant: form.isPregnant
       })
       toast.dismiss(loading)
-      toast.success('✅ Patient registered successfully!')
+      
+      // ADDITION 6: Incentive toast and earnings update
+      toast.success('🎉 Patient registered! ₹10 credited to your account')
+      const earnings = safeParse(localStorage.getItem('gd_asha_earnings'), { today: 0, total: 0 })
+      earnings.today += 10
+      earnings.total += 10
+      localStorage.setItem('gd_asha_earnings', JSON.stringify(earnings))
+      
       navigate('/app/asha-patients')
     } catch (err) {
       toast.error(err.message || 'Registration failed')

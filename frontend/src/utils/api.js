@@ -246,8 +246,11 @@ export const api = {
 
   // Triage
   // Triage needs real-time responses; do not swallow errors with fallback.
-  triageChat: (messages) =>
-    request('/triage/chat', { method: 'POST', body: JSON.stringify({ messages }) }),
+  triageChat: (messages, mlResults = [], language = 'en') =>
+    request('/triage/chat', { 
+      method: 'POST', 
+      body: JSON.stringify({ messages, mlResults, language }) 
+    }),
 
   // Dashboard
   getDashboard: () => 

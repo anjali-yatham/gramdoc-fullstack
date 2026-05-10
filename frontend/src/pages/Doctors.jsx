@@ -61,8 +61,132 @@ export default function Doctors() {
   useEffect(()=>{
     setLoading(true)
     api.getDoctors().then(d => {
-      setDoctors(d)
+      // If API returns doctors, use them
+      if (d && d.length > 0) {
+        setDoctors(d)
+      } else {
+        // Fallback to demo doctors if API returns empty
+        const DEMO_DOCTORS = [
+          {
+            _id: 'demo-1',
+            name: 'Dr. Thanmaiya',
+            email: 'thanmaiya@gramdoc.com',
+            specialization: 'General Physician',
+            experience: 5,
+            languages: ['English', 'Hindi', 'Telugu'],
+            rating: 4.8,
+            reviewCount: 156,
+            isAvailable: true,
+            isVerified: true,
+            estimatedWait: '2 mins',
+            availabilityText: 'Available: 9AM - 6PM today'
+          },
+          {
+            _id: 'demo-2',
+            name: 'Dr. Priya Sharma',
+            email: 'priya@gramdoc.com',
+            specialization: 'General Physician',
+            experience: 8,
+            languages: ['Telugu', 'Hindi', 'English'],
+            rating: 4.8,
+            reviewCount: 234,
+            isAvailable: true,
+            isVerified: true,
+            estimatedWait: '3 mins',
+            availabilityText: 'Available: 9AM - 6PM today'
+          },
+          {
+            _id: 'demo-3',
+            name: 'Dr. Arjun Reddy',
+            email: 'arjun@gramdoc.com',
+            specialization: 'Pediatrician',
+            experience: 12,
+            languages: ['Telugu', 'English'],
+            rating: 4.9,
+            reviewCount: 412,
+            isAvailable: true,
+            isVerified: true,
+            estimatedWait: '7 mins',
+            availabilityText: 'Available: 9AM - 6PM today'
+          },
+          {
+            _id: 'demo-4',
+            name: 'Dr. Meena Iyer',
+            email: 'meena@gramdoc.com',
+            specialization: 'Gynaecologist',
+            experience: 15,
+            languages: ['Tamil', 'Telugu', 'English'],
+            rating: 4.7,
+            reviewCount: 189,
+            isAvailable: false,
+            isVerified: true,
+            estimatedWait: '12 mins',
+            availabilityText: 'Available: 2PM - 8PM today'
+          }
+        ]
+        setDoctors(DEMO_DOCTORS)
+      }
     }).catch(err => {
+      // On error, also use demo doctors
+      const DEMO_DOCTORS = [
+        {
+          _id: 'demo-1',
+          name: 'Dr. Thanmaiya',
+          email: 'thanmaiya@gramdoc.com',
+          specialization: 'General Physician',
+          experience: 5,
+          languages: ['English', 'Hindi', 'Telugu'],
+          rating: 4.8,
+          reviewCount: 156,
+          isAvailable: true,
+          isVerified: true,
+          estimatedWait: '2 mins',
+          availabilityText: 'Available: 9AM - 6PM today'
+        },
+        {
+          _id: 'demo-2',
+          name: 'Dr. Priya Sharma',
+          email: 'priya@gramdoc.com',
+          specialization: 'General Physician',
+          experience: 8,
+          languages: ['Telugu', 'Hindi', 'English'],
+          rating: 4.8,
+          reviewCount: 234,
+          isAvailable: true,
+          isVerified: true,
+          estimatedWait: '3 mins',
+          availabilityText: 'Available: 9AM - 6PM today'
+        },
+        {
+          _id: 'demo-3',
+          name: 'Dr. Arjun Reddy',
+          email: 'arjun@gramdoc.com',
+          specialization: 'Pediatrician',
+          experience: 12,
+          languages: ['Telugu', 'English'],
+          rating: 4.9,
+          reviewCount: 412,
+          isAvailable: true,
+          isVerified: true,
+          estimatedWait: '7 mins',
+          availabilityText: 'Available: 9AM - 6PM today'
+        },
+        {
+          _id: 'demo-4',
+          name: 'Dr. Meena Iyer',
+          email: 'meena@gramdoc.com',
+          specialization: 'Gynaecologist',
+          experience: 15,
+          languages: ['Tamil', 'Telugu', 'English'],
+          rating: 4.7,
+          reviewCount: 189,
+          isAvailable: false,
+          isVerified: true,
+          estimatedWait: '12 mins',
+          availabilityText: 'Available: 2PM - 8PM today'
+        }
+      ]
+      setDoctors(DEMO_DOCTORS)
       toast.error(TX.loadFail[lang] || TX.loadFail.en)
     }).finally(() => {
       setLoading(false)
@@ -84,7 +208,7 @@ export default function Doctors() {
       toast.success('Payment successful! ₹49')
       setTimeout(() => {
         localStorage.setItem('gd_doctor', JSON.stringify(paymentDoctor))
-        nav('/app/consultation', { state: { doctor: paymentDoctor, paid: true } })
+        nav('/app/consultation/call', { state: { doctor: paymentDoctor, paid: true } })
         setShowPayment(false)
         setPaymentStatus(null)
       }, 1500)
@@ -404,7 +528,7 @@ export default function Doctors() {
                     }
                     toast.success('BPL verified. Continuing free consultation.')
                     localStorage.setItem('gd_doctor', JSON.stringify(paymentDoctor))
-                    nav('/app/consultation', { state: { doctor: paymentDoctor, paid: true, bpl: true } })
+                    nav('/app/consultation/call', { state: { doctor: paymentDoctor, paid: true, bpl: true } })
                     setShowPayment(false)
                   }}
                   style={{ width: '100%', background: '#1d9e75', color: '#fff', border: 'none', borderRadius: 8, padding: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}

@@ -114,18 +114,20 @@ export default function AshaWorkerDashboard() {
           </div>
 
           <div style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* ADDITION 1: Village Health Score */}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                <motion.div 
-                 animate={{ scale: [1, 1.15, 1] }} 
+                 animate={{ scale: [1, 1.1, 1] }} 
                  transition={{ duration: 2, repeat: Infinity }}
                  style={{ position: 'absolute', width: 100, height: 100, borderRadius: '50%', border: '2px solid rgba(123,202,164,0.4)' }} 
                />
-               <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#fff', color: '#0f3d2a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, fontWeight: 800, fontFamily: 'Fraunces', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
-                 {totalPatients}
+               <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#fff', color: '#0f3d2a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
+                 <div style={{ fontFamily: 'Fraunces', fontSize: 32, fontWeight: 800, lineHeight: 1 }}>87</div>
+                 <div style={{ fontSize: 14, fontWeight: 700, color: '#7bcaa4' }}>%</div>
                </div>
             </div>
-            <p style={{ fontSize: 13, color: '#7bcaa4', fontWeight: 700, marginTop: 12 }}>
-              Consultations this week: {consultationsThisWeek || 0}
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', fontWeight: 700 }}>
+              Village Health Score
             </p>
           </div>
         </motion.div>
@@ -161,6 +163,19 @@ export default function AshaWorkerDashboard() {
                     No priority tasks right now.
                   </div>
                 )}
+                
+                {/* ADDITION 2: Completed Task */}
+                <div style={{ borderLeft: '4px solid #1d9e75', padding: '16px 20px', background: 'rgba(29,158,117,0.05)', borderRadius: '0 12px 12px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ background: '#e8f5ee', color: '#1d9e75', fontSize: 10, fontWeight: 800, padding: '4px 10px', borderRadius: 20, textTransform: 'uppercase' }}>
+                      🟢 COMPLETED
+                    </span>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#0f3d2a', marginTop: 8 }}>
+                      Registered 2 new patients this morning
+                    </div>
+                    <div style={{ fontSize: 11, color: '#999', marginTop: 4 }}>9:30 AM today</div>
+                  </div>
+                </div>
              </div>
           </motion.div>
 
@@ -186,6 +201,19 @@ export default function AshaWorkerDashboard() {
              ))}
           </motion.div>
         </div>
+
+        {/* ADDITION 3: Incentive Earnings Today */}
+        <motion.div variants={item} style={{ background: 'linear-gradient(135deg, #0f3d2a, #1a5c38)', borderRadius: 14, padding: '16px 20px', color: '#fff', marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>💰 Today's Incentive Earnings</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: '#7bcaa4', fontFamily: 'Fraunces', fontStyle: 'italic' }}>₹85 earned today</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: 11, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
+            <div>Register ₹10 × 2 = ₹20</div>
+            <div>Consult ₹15 × 3 = ₹45</div>
+            <div>Follow-up ₹5 × 4 = ₹20</div>
+          </div>
+        </motion.div>
 
         {/* SECTION 5 — REGISTER NEW PATIENT BUTTON */}
         <motion.div 

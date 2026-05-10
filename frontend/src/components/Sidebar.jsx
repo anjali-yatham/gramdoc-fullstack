@@ -90,6 +90,7 @@ export default function Sidebar() {
       links: [
         { to: '/app/asha-pregnancy', icon: '🤰', label: 'Pregnancy Tracker' },
         { to: '/app/asha-vaccination', icon: '💉', label: 'Vaccination Tracker' },
+        { to: '/app/asha-accountability', icon: '🎯', label: 'Accountability' },
         { to: '/app/asha-report', icon: '📊', label: 'Village Report' },
       ]
     }
@@ -100,10 +101,10 @@ export default function Sidebar() {
       section: 'PHARMACY',
       links: [
         { to: '/app/pharmacy-dashboard', icon: '🏠', label: 'Dashboard' },
-        { to: '/app/pharmacy-orders', icon: '📦', label: 'Orders', soon: true },
-        { to: '/app/pharmacy-inventory', icon: '💊', label: 'Inventory', soon: true },
-        { to: '/app/pharmacy-earnings', icon: '💰', label: 'Earnings', soon: true },
-        { to: '/app/pharmacy-profile', icon: '👤', label: 'Profile', soon: true },
+        { to: '/app/pharmacy-orders', icon: '📦', label: 'Orders' },
+        { to: '/app/pharmacy-inventory', icon: '💊', label: 'Inventory' },
+        { to: '/app/pharmacy-earnings', icon: '💰', label: 'Earnings' },
+        { to: '/app/pharmacy-profile', icon: '👤', label: 'Profile' },
       ]
     }
   ]

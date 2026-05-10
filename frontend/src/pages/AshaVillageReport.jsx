@@ -7,6 +7,7 @@ export default function AshaVillageReport() {
   const [loading, setLoading] = useState(true)
   const [report, setReport] = useState(null)
   const [alerts, setAlerts] = useState([])
+  const [weekOffset, setWeekOffset] = useState(0)
 
   useEffect(() => {
     fetchReport()
@@ -35,6 +36,48 @@ export default function AshaVillageReport() {
     }
   }
 
+  // ADDITION 9: Week selector function
+  const getWeekLabel = (offset) => {
+    const now = new Date()
+    const start = new Date(now)
+    start.setDate(now.getDate() - now.getDay() + (offset * 7))
+    const end = new Date(start)
+    end.setDate(start.getDate() + 6)
+    return `${start.toLocaleDateString('en-IN', {day:'numeric', month:'short'})} - ${end.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})}`
+  }
+
+  // ADDITION 10: Download Report function
+  const handleDownloadReport = () => {
+    const reportContent = `GramDoc Village Health Report
+Village: ${report?.villageName || 'Kondapur, Warangal'}
+Week: ${getWeekLabel(weekOffset)}
+Generated: ${new Date().toLocaleString('en-IN')}
+
+SUMMARY
+Total Consultations: ${report?.totalConsultations || 23}
+New Registrations: ${report?.newRegistrations || 4}
+Prescriptions Issued: ${report?.prescriptionsIssued || 19}
+ANC Checkups: ${report?.ancCheckups || 6}
+
+COMMON ILLNESSES
+${commonIllnesses.map(ill => `${ill.label}: ${totalIllnessCount > 0 ? Math.round((Number(ill.count || 0) / totalIllnessCount) * 100) : 0}%`).join('\n')}
+
+VACCINATION COVERAGE: ${coveragePct}%
+${vaccinationBreakdown.map(b => `${b.label}: ${b.val}`).join('\n')}
+
+ASHA WORKER: Sunita Devi
+Accountability Score: 76%
+`
+    const blob = new Blob([reportContent], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `GramDoc-Report-${getWeekLabel(weekOffset).replace(/[^a-z0-9]/gi,'_')}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success('Report downloaded!')
+  }
+
   const cardStyle = {
     background: '#fff', borderRadius: 20, padding: 24, border: '1px solid #e8d5bc', boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
   }
@@ -58,16 +101,41 @@ export default function AshaVillageReport() {
         <div>
           <h1 style={{ fontFamily: 'Fraunces', fontStyle: 'italic', fontSize: 32, color: '#0f3d2a', margin: 0 }}>📊 Village Health Report</h1>
           <p style={{ fontSize: 16, color: '#6b5e50', margin: '4px 0 12px 0' }}>{report?.villageName || 'Village not set'}</p>
+          
+          {/* ADDITION 9: Week selector with arrows */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#fdf6ec', padding: '6px 14px', borderRadius: 10, border: '1px solid #e8d5bc', width: 'fit-content' }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#0f3d2a' }}>{weekLabel}</span>
+            <button
+              onClick={() => setWeekOffset(w => w - 1)}
+              style={{ background: 'transparent', border: 'none', fontSize: 18, cursor: 'pointer', color: '#0f3d2a', padding: '0 4px' }}
+            >
+              ←
+            </button>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#0f3d2a', minWidth: 200, textAlign: 'center' }}>
+              {getWeekLabel(weekOffset)}
+            </span>
+            <button
+              onClick={() => setWeekOffset(w => w + 1)}
+              disabled={weekOffset === 0}
+              style={{ background: 'transparent', border: 'none', fontSize: 18, cursor: weekOffset === 0 ? 'not-allowed' : 'pointer', color: weekOffset === 0 ? '#ccc' : '#0f3d2a', padding: '0 4px' }}
+            >
+              →
+            </button>
           </div>
         </div>
-        <button 
-          onClick={handleSendToPHC}
-          style={{ background: '#0f3d2a', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 24px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(15,61,42,0.15)' }}
-        >
-          📤 Send to PHC
-        </button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button 
+            onClick={handleDownloadReport}
+            style={{ background: '#fff', color: '#0f3d2a', border: '1px solid #0f3d2a', borderRadius: 12, padding: '12px 24px', fontWeight: 700, cursor: 'pointer' }}
+          >
+            ⬇️ Download Report
+          </button>
+          <button 
+            onClick={handleSendToPHC}
+            style={{ background: '#0f3d2a', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 24px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(15,61,42,0.15)' }}
+          >
+            📤 Send to PHC
+          </button>
+        </div>
       </div>
 
       {/* SECTION 1 — Week Summary */}

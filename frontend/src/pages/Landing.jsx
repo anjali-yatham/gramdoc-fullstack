@@ -80,6 +80,10 @@ export default function Landing() {
     { icon: '📶', title: 'Works Offline', desc: 'Fill symptom forms without internet. Syncs when connectivity returns.' },
     { icon: '👩‍⚕️', title: 'ASHA Integration', desc: 'Community health workers help register and follow up patients' },
     { icon: '🚨', title: 'Emergency SOS', desc: 'One tap sends GPS location to ambulance + family contacts' },
+    { icon: '🏥', title: 'Hospital Partnerships', desc: 'Urban specialists reach rural patients digitally.' },
+    { icon: '🤝', title: 'CSR & Government Support', desc: 'Healthcare programs sponsored for villages and PHCs.' },
+    { icon: '👩‍⚕️', title: 'ASHA Worker Enablement', desc: 'Community workers assist patients in consultations.' },
+    { icon: '💊', title: 'Affordable Medicine Access', desc: 'Verified prescriptions integrated with Jan Aushadhi and local pharmacies.' },
   ]
 
   // Stats counting component

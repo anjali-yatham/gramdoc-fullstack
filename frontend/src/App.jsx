@@ -27,12 +27,18 @@ const AshaPregnancyTracker = lazy(() => import('./pages/AshaPregnancyTracker'))
 const AshaPatients = lazy(() => import('./pages/AshaPatients'))
 const AshaVaccinationTracker = lazy(() => import('./pages/AshaVaccinationTracker'))
 const AshaVillageReport = lazy(() => import('./pages/AshaVillageReport'))
+const AshaAccountability = lazy(() => import('./pages/AshaAccountability'))
 const PharmacyDashboard = lazy(() => import('./pages/PharmacyDashboard'))
+const PharmacyOrders = lazy(() => import('./pages/PharmacyOrders'))
+const PharmacyInventory = lazy(() => import('./pages/PharmacyInventory'))
+const PharmacyEarnings = lazy(() => import('./pages/PharmacyEarnings'))
+const PharmacyProfile = lazy(() => import('./pages/PharmacyProfile'))
 
 function RoleBasedDashboard() {
   const user = JSON.parse(localStorage.getItem('gramdoc_user') || '{}')
   if (user?.role === 'doctor') return <DoctorDashboard />
   if (user?.role === 'asha') return <AshaWorkerDashboard />
+  if (user?.role === 'pharmacy') return <PharmacyDashboard />
   return <PatientDashboard />
 }
 
@@ -102,7 +108,12 @@ export default function App() {
             <Route path="asha-patients" element={<AshaPatients />} />
             <Route path="asha-vaccination" element={<AshaVaccinationTracker />} />
             <Route path="asha-report" element={<AshaVillageReport />} />
+            <Route path="asha-accountability" element={<AshaAccountability />} />
             <Route path="pharmacy-dashboard" element={<PharmacyDashboard />} />
+            <Route path="pharmacy-orders" element={<PharmacyOrders />} />
+            <Route path="pharmacy-inventory" element={<PharmacyInventory />} />
+            <Route path="pharmacy-earnings" element={<PharmacyEarnings />} />
+            <Route path="pharmacy-profile" element={<PharmacyProfile />} />
           </Route>
           <Route path="*" element={<Navigate to={
             localStorage.getItem('gramdoc_token') 

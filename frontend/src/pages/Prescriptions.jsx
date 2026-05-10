@@ -176,6 +176,23 @@ export default function Prescriptions() {
     navigate('/app/pharmacy-dashboard')
   }
 
+  const handleSendToPharmacy = (pharmacy) => {
+    if (!selected) return
+    
+    const pharmacyOrder = {
+      prescriptionId: selected._id,
+      pharmacy: pharmacy,
+      medicines: selected.medicines || [],
+      patientName: selected.patientName,
+      status: 'sent',
+      sentAt: new Date().toISOString()
+    }
+    
+    localStorage.setItem('gd_pharmacy_order', JSON.stringify(pharmacyOrder))
+    setShowPharmacyModal(false)
+    toast.success(`✅ Prescription sent to ${pharmacy.name}!`)
+  }
+
   const openCalendarEvent = (dateValue, title, details) => {
     if (!dateValue) {
       toast.error('No follow-up date set')
@@ -210,6 +227,7 @@ export default function Prescriptions() {
     instructions: ''
   })
   const [suggestions, setSuggestions] = useState([])
+  const [showPharmacyModal, setShowPharmacyModal] = useState(false)
 
   useEffect(() => {
     if (diagnosis) {
@@ -1261,10 +1279,18 @@ export default function Prescriptions() {
                       localStorage.removeItem('gd_active_patient')
                       localStorage.removeItem('gd_call_start')
                       localStorage.removeItem('gd_consultation_id')
-                    }} style={{ flex: 1, background: '#25D366', color: '#fff', border: 'none', borderRadius: 12, padding: '14px', fontWeight: 700, cursor: 'pointer' }}>📲 WhatsApp</button>
+                    }} style={{ flex: 1, background: '#25D366', color: '#fff', border: 'none', borderRadius: 10, padding: '11px', fontWeight: 600, cursor: 'pointer', fontSize: 12 }}>📲 WhatsApp</button>
+                    
+                    <button 
+                      onClick={() => setShowPharmacyModal(true)}
+                      style={{ flex: 1, background: '#2d5fa3', color: '#fff', border: 'none', borderRadius: 10, padding: '11px', fontWeight: 600, cursor: 'pointer', fontSize: 12 }}
+                    >
+                      💊 Send to Pharmacy
+                    </button>
+                    
                     <button 
                       onClick={handlePrint}
-                      style={{ flex: 1, background: '#0f3d2a', color: '#fff', border: 'none', borderRadius: 12, padding: '14px', fontWeight: 700, cursor: 'pointer' }}
+                      style={{ flex: 1, background: '#0f3d2a', color: '#fff', border: 'none', borderRadius: 10, padding: '11px', fontWeight: 600, cursor: 'pointer', fontSize: 12 }}
                     >
                       🖨️ Print Rx
                     </button>
@@ -1306,6 +1332,135 @@ export default function Prescriptions() {
           </div>
         </div>
       </div>
+
+      {/* PHARMACY SELECTION MODAL */}
+      <AnimatePresence>
+        {showPharmacyModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPharmacyModal(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#fff',
+                borderRadius: 20,
+                padding: 28,
+                width: 400,
+                maxWidth: '90%',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ 
+                  fontFamily: "'Fraunces', serif", 
+                  fontStyle: 'italic', 
+                  fontSize: 22, 
+                  color: '#0f3d2a',
+                  margin: 0
+                }}>
+                  Select Nearby Pharmacy
+                </h2>
+                <button
+                  onClick={() => setShowPharmacyModal(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    fontSize: 24,
+                    color: '#6b5e50',
+                    cursor: 'pointer',
+                    padding: 0,
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {[
+                  { name: 'Sri Balaji Medical Store', distance: '2.3 km away', time: '~45 mins', rating: '4.8' },
+                  { name: 'Kondapur Pharmacy', distance: '1.1 km away', time: '~30 mins', rating: '4.6' },
+                  { name: 'Jan Aushadhi Centre', distance: '3.7 km away', time: '~60 mins', rating: '4.9', govt: true }
+                ].map((pharmacy, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ scale: 1.02 }}
+                    style={{
+                      border: '1.5px solid #e8d5bc',
+                      borderRadius: 12,
+                      padding: 16,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = '#7bcaa4'}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e8d5bc'}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: '#0f3d2a', marginBottom: 4 }}>
+                          {pharmacy.name}
+                        </div>
+                        <div style={{ fontSize: 12, color: '#6b5e50', marginBottom: 2 }}>
+                          📍 {pharmacy.distance} • 🕐 {pharmacy.time}
+                        </div>
+                        <div style={{ fontSize: 12, color: '#6b5e50' }}>
+                          ★ {pharmacy.rating}
+                        </div>
+                      </div>
+                      <div style={{
+                        background: '#e8f5ee',
+                        color: '#1d9e75',
+                        padding: '4px 10px',
+                        borderRadius: 8,
+                        fontSize: 11,
+                        fontWeight: 700
+                      }}>
+                        {pharmacy.govt ? 'Govt' : 'Available'}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleSendToPharmacy(pharmacy)}
+                      style={{
+                        width: '100%',
+                        background: '#2d5fa3',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 8,
+                        padding: '10px',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        marginTop: 8
+                      }}
+                    >
+                      Select
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
