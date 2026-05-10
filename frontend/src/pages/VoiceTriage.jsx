@@ -515,9 +515,9 @@ export default function VoiceTriage() {
 
   async function startListening() {
     if (shouldStopRef.current || isListeningRef.current !== true) return
+    setListening(true) // Show listening indicator immediately
     // Small delay before listening starts
     await new Promise(r => setTimeout(r, 400))
-    setListening(true)
     try {
       const heard = await listenOnce(lang, 20000)
       if (shouldStopRef.current) return
@@ -579,9 +579,9 @@ export default function VoiceTriage() {
 
   async function askQuestion(q) {
     if (useText || shouldStopRef.current) return
-    // Small delay before listening
+    setListening(true) // Show listening indicator immediately
+    // Small delay before listening starts
     await new Promise(r => setTimeout(r, 400))
-    setListening(true)
     try {
       const heard = await listenOnce(lang, 20000)
       if (shouldStopRef.current) return
@@ -672,12 +672,17 @@ export default function VoiceTriage() {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.6; }
         }
+        @keyframes listenBurst {
+          0% { transform: scale(0.8); opacity: 0; }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); opacity: 1; }
+        }
       `}</style>
       
       {/* Header */}
       <div style={{ background:'#fff', borderRadius:16, padding:'14px 20px', marginBottom:14, border:'0.5px solid #e8d5bc', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:40, height:40, borderRadius:'50%', background: listening ? '#A32D2D' : '#0f3d2a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, animation: listening ? 'pulse 1s infinite' : 'none' }}>🎤</div>
+          <div style={{ width:40, height:40, borderRadius:'50%', background: listening ? '#A32D2D' : '#0f3d2a', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, animation: listening ? 'listenBurst 0.5s ease-out, pulse 1s infinite 0.5s' : 'none' }}>🎤</div>
           <div>
             <div style={{ fontSize:14, fontWeight:700, color:'#0f3d2a', fontFamily:'Fraunces,serif', fontStyle:'italic' }}>GramDoc AI</div>
             <div style={{ fontSize:10, color: listening ? '#A32D2D' : phase === 'result' ? '#1d9e75' : speaking ? '#ba7517' : '#6b5e50', fontWeight: listening ? 700 : 600 }}>
@@ -718,7 +723,7 @@ export default function VoiceTriage() {
       {/* Chat */}
       <div style={{ flex:1, overflowY:'auto', paddingBottom:12 }}>
         {listening && (
-          <div style={{ background: '#A32D2D', color: '#fff', padding: '16px 12px', borderRadius: 12, marginBottom: 16, textAlign: 'center', fontSize: 14, fontWeight: 700, animation: 'pulse 1s infinite', border: '2px solid #6b0000' }}>
+          <div style={{ background: '#A32D2D', color: '#fff', padding: '16px 12px', borderRadius: 12, marginBottom: 16, textAlign: 'center', fontSize: 14, fontWeight: 700, animation: 'listenBurst 0.5s ease-out, pulse 1s infinite 0.5s', border: '2px solid #6b0000' }}>
             🎤 YOUR VOICE IS BEING LISTENED TO - SPEAK NOW! 🎤
           </div>
         )}
